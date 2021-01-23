@@ -1,4 +1,5 @@
 from telegram import InlineQueryResultPhoto
+import os
 import jdatetime
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext
@@ -34,18 +35,30 @@ def button(update: Update, context: CallbackContext) -> None:
 
 def get_file(update, context):
     tag = update.message.caption
-    photo = update.message.photo[-1].get_file()
-    # file_name = jdatetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S") + '.png'
-    photo.download(f'images/{tag}.png')
-    msg = f"the image saved with '{tag}' name"
-    context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
+    if len(tag) == 0:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Please send image WITH CAPTION.")
+    else:
+        photo = update.message.photo[-1].get_file()
+        # file_name = jdatetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S") + '.png'
+        filename = f'images/{tag}.png'
+        index = 0
+        while os.path.lexists(filename):
+            index += 1
+            filename = f'images/{tag} ({index}).png'
+
+        photo.download(filename)
+        msg = f"the image saved with '{tag}' name"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
 
 
 def search(update, context):
     query = update.message.text
     results = controller.search(query)
-    for image_title in results:
-        context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(IMAGES_DIR+image_title, 'rb'))
+    if len(results) == 0:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry. I have no match for you :(")
+    else:
+        for image_title in results:
+            context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(IMAGES_DIR+image_title, 'rb'))
 
 
 def unknown(update, context):
