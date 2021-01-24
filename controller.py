@@ -36,8 +36,15 @@ def search(q):
             results.append(image)
     return results
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
     # for image in os.listdir('/home/amin/PycharmProjects/teacher_meme_bot/images/'):
     #     upload_image(image.title(), 'images/' + image.title().lower())
     #     print(image.title() + 'uploaded.')
-    
+    print("Start Testing...")
+    filename = "کریم فیزیک فحش.png"
+    filename2 = "کریم-فیزیک-جو-کم-عقل-خنده.png"
+    r = get_image(filename)
+    print(r)
+    r2 = get_image(filename2)
+    print(r2)
+
